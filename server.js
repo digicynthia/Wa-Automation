@@ -53,3 +53,58 @@ app.post("/webhook", (req, res) => {
 
   res.sendStatus(200);
 });
+
+
+const axios = require("axios");
+
+const sendMessage = async (to, text) => {
+  await axios.post(
+    `https://graph.facebook.com/v18.0/${process.env.PHONE_NUMBER_ID}/messages`,
+    {
+      messaging_product: "whatsapp",
+      to,
+      text: { body: text }
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+};
+
+app.post("/webhook", async (req, res) => {
+  const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+
+  if (!message) return res.sendStatus(200);
+
+  const from = message.from;
+  const text = message.text?.body?.toLowerCase();
+
+  if (!text || text === "hi") {
+    await sendMessage(
+      from,
+      `Welcome 👋  
+How can we help you today?
+
+1️⃣ Buy a product  
+2️⃣ Book a service  
+3️⃣ Talk to support`
+    );
+  }
+
+  if (text === "1") {
+    await sendMessage(from, "Please tell us the product you’re interested in.");
+  }
+
+  if (text === "2") {
+    await sendMessage(from, "Please tell us the service you want to book.");
+  }
+
+  if (text === "3") {
+    await sendMessage(from, "A human agent will respond shortly.");
+  }
+
+  res.sendStatus(200);
+});
