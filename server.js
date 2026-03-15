@@ -1,7 +1,10 @@
 require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
+const Lead = require("./models/Lead");
+const clients = require("./clients");
 
 const app = express();
 app.use(express.json());
@@ -51,47 +54,47 @@ const sendMessage = async (to,text)=>{
 };
 
 // Incoming messages
-app.post("/webhook", async (req,res)=>{
+app.post("/webhook", async (req, res) => {
+  const value = req.body.entry?.[0]?.changes?.[0]?.value;
+  const message = value?.messages?.[0];
 
-  console.log("Incoming:",JSON.stringify(req.body,null,2));
-
-  const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-
-  if(!message){
-    return res.sendStatus(200);
-  }
+  if (!message) return res.sendStatus(200);
 
   const from = message.from;
   const text = message.text?.body?.toLowerCase();
+  const platform = value?.metadata?.display_phone_number ? "whatsapp" : "instagram";
 
-  console.log("User:",from,"Message:",text);
+  const clientId = "client_001"; // later dynamic per client
+  const client = clients[clientId];
 
-  if(!text || text==="hi"){
-    await sendMessage(from,
-`Welcome 👋
+  // Save lead
+  await Lead.create({
+    clientId,
+    platform,
+    phone: from,
+    message: text
+  });
 
-How can we help you today?
-
-1️⃣ Buy a product
-2️⃣ Book a service
-3️⃣ Talk to support`);
+  // Auto replies
+  if (!text || text === "hi") {
+    await sendMessage(from, client.welcome);
   }
 
-  else if(text==="1"){
-    await sendMessage(from,"Please tell us the product you're interested in.");
+  if (text === "1") {
+    await sendMessage(from, "Please tell us the product you’re interested in.");
   }
 
-  else if(text==="2"){
-    await sendMessage(from,"Please tell us the service you want to book.");
+  if (text === "2") {
+    await sendMessage(from, "Please tell us the service you want to book.");
   }
 
-  else if(text==="3"){
-    await sendMessage(from,"A human agent will respond shortly.");
+  if (text === "3") {
+    await sendMessage(from, "A human agent will respond shortly.");
   }
 
   res.sendStatus(200);
-
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT,()=>console.log(`Server running on ${PORT}`));
