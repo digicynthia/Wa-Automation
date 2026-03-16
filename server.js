@@ -9,6 +9,17 @@ const clients = require("./clients");
 const app = express();
 app.use(express.json());
 
+//scheduler
+setInterval(async () => {
+  const leads = await Lead.find({
+    createdAt: { $lte: new Date(Date.now() - 60 * 60 * 1000) }
+  });
+
+  for (let lead of leads) {
+    await sendMessage(lead.phone, "Just checking in 😊 Are you still interested?");
+  }
+}, 60 * 60 * 1000);
+
 // MongoDB
 mongoose.connect(process.env.MONGO_URI)
 .then(()=> console.log("Database connected"))
@@ -66,6 +77,16 @@ app.post("/webhook", async (req, res) => {
 
   const clientId = "client_001"; // later dynamic per client
   const client = clients[clientId];
+
+  if (platform === "instagram") {
+  if (text.includes("price")) {
+    await sendMessage(from, client.igKeywords.price);
+  }
+
+  if (text.includes("book")) {
+    await sendMessage(from, client.igKeywords.book);
+  }
+}
 
   // Save lead
   await Lead.create({
