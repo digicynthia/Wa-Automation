@@ -6,6 +6,14 @@ const LeadSchema = new mongoose.Schema({
   name: String,
   phone: String,
   message: String,
+
+  followUpCount: {
+    type: Number,
+    default: 0
+  },
+
+  lastFollowUp: Date,
+
   createdAt: {
     type: Date,
     default: Date.now
