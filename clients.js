@@ -6,7 +6,7 @@ module.exports = {
 
     phoneNumberId:"1023796230820051",
 
-    whatsappToken:"EAAXo440FGEwBQzOqBIlQ34ZAHfbuXCE9RbLoZAMX5PhmtiUBQwxZBg9m1p44IX9OZBYhHcUwGwG4BNeiHPMn4Yrm3dND3BPF4DhlNHT9xCycB7YaNqDAVAsfpTEriGeqkF1m9LSlDZAot0xBz8WUE94YZAzh79740dniCBsxEg8uEAkG2ZAnL8ldKChnQAER6ZCPX3SNGdBEwEQqaizfZAGOVspebWLioUEBlRETkDAYt2aGWv7gcwCNlSguchMZCjktCPtmqLbXs8EQcg2yKzkZAQdROZAbWETXjs0zDgZDZD",
+    whatsappToken: process.env.WHATSAPP_TOKEN,
 
     instagramAccountId:"987654321",
 
