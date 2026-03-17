@@ -125,7 +125,7 @@ setInterval(async () => {
     // FIRST FOLLOW-UP (after 5 hours)
     if (lead.followUpCount === 0) {
 
-      if (now - createdTime >= 5 * 60 * 60 * 1000) {
+      if (now - createdTime >= 1 * 60 * 60 * 1000) {
         sendFollowUp = true;
       }
 
@@ -134,7 +134,7 @@ setInterval(async () => {
     // SECOND FOLLOW-UP (after 24 hours total)
     if (lead.followUpCount === 1) {
 
-      if (now - createdTime >= 24 * 60 * 60 * 1000) {
+      if (now - createdTime >= 3 * 60 * 60 * 1000) {
         sendFollowUp = true;
       }
 
